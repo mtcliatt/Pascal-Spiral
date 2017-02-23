@@ -13,7 +13,7 @@
 
   - Make util functions
 
-
+  - Get rid of grid lines completely, they obsfuscate the code
 
   Notes:
 
@@ -62,9 +62,6 @@ let utils = {
   const rectangleWidth = (canvas.width - totalVerticalLineSize) / numRectanglesWide;
   const rectangleHeight = (canvas.height - totalHorizontalLineSize) / numRectanglesHigh;
 
-  if (gridLinesOn)
-    drawGridLines();
-
   drawSpiral();
 
   // Draws a rect from (x, y) to (x + rectangleWidth, y + rectangleHeight)
@@ -105,30 +102,6 @@ let utils = {
     return {x, y};
   }
 
-  function drawGridLines() {
-    ctx.strokeStyle = gridColor;
-    ctx.lineWidth = gridThickness;
-
-    const drawLine = (x1, y1, x2, y2) => {
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-    };
-
-    // Draws vertical grid lines (uses <= to draw the last border)
-    for (let i = 0; i <= numRectanglesWide; i++) {
-      const x = i * rectangleWidth + i * gridThickness;
-      drawLine(x, 0, x, canvas.height);
-    }
-
-    // Draws horizontal grid lines (uses <= to draw the last border)
-    for (let i = 0; i <= numRectanglesHigh; i++) {
-      const y = i * rectangleHeight + i * gridThickness;
-      drawLine(0, y, canvas.width, y);
-    }
-  }
-
   function drawSpiral() {
     let row = numRectanglesHigh / 2;
     let col = numRectanglesWide / 2;
@@ -140,24 +113,25 @@ let utils = {
     let delta = [0, -1];
     let width = 4000;
     let height = 4000;
-
     let iterations = Math.pow(Math.max(width, height), 2);
+
     for (let i = iterations; i > 0; i--) { 
+      skips++;
 
-        if(skips == -10) {
-          drawRectangle(col + x, row + y);
-          skips = 0;
-          gap += 1;
-        } else if (++skips >= gap) {
-          drawRectangle(col + x, row + y);
-          skips = -10;
-        }
+      if (skips == gap)
+        drawRectangle(col + x, row + y);
+      
+      if (skips == gap + 1) {
+        drawRectangle(col + x, row + y);
+        skips = 0;
+        gap += 1;
+      }
+      
+      if (x === y || (x < 0 && x === -y) || (x > 0 && x === 1 - y))
+          delta = [-delta[1], delta[0]];
 
-        if (x === y || (x < 0 && x === -y) || (x > 0 && x === 1 - y))
-            delta = [-delta[1], delta[0]];
-
-        x += delta[0];
-        y += delta[1];
+      x += delta[0];
+      y += delta[1];
 
     }
 
