@@ -23,13 +23,39 @@ const colors = [
 
 let colorIndex = 0;
 
-//Good resolutions: 10, 20, 40, 80, 200, 400, 800, 1600, 2000, 4000, 8000
-let resolution = 20;
-let spiralSize = 8000;
-let canvasSize = 800;
+//Nothing shows up after 11180?
+let canvasSize = 11000;
+let resolution = canvasSize / 40;
 
-let initialGap = 0;
-let gapIncrement = 1;
+/*
+  Original:
+    let initialGap = 0;
+    let gapIncrement = 1;
+    let incrementDelta = 0;
+  
+  Square:
+    let initialGap = 1;
+    let gapIncrement = 2;
+    let incrementDelta = 0;
+
+  Pentagonal:
+    let initialGap = 1;
+    let gapIncrement = 4;
+    let incrementDelta = 3;
+  
+  
+  WOW! oscillations:
+    let initialGap = 5;
+    let gapIncrement = 4;
+    let incrementDelta = 3;
+    
+
+*/
+
+let initialGap = 1;
+let gapIncrement = 4;
+let incrementDelta = 3;
+let gapMultiplier = 1;
 
 let utils = {
   clearGrid: null,
@@ -48,6 +74,10 @@ let utils = {
 
   let rectangleSize = (canvasSize - resolution) / resolution;
 
+  utils.doMath = () => {
+    rectangleSize = (canvasSize - resolution) / resolution;
+  }
+
   utils.clearGrid = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   utils.redrawGrid = () => {
@@ -63,8 +93,8 @@ let utils = {
 
   utils.drawRectangle = (column, row) => {
     const {x, y} = utils.rectangleToCoordinate(column, row);
-    if (column % 2 == 1 && row % 2 == 1)
-      colorIndex++;
+    //if (column % 2 == 1 && row % 2 == 1)
+    //  colorIndex++;
     utils.drawRectangleAt(x, y);
   }
 
@@ -75,6 +105,68 @@ let utils = {
 
     return {x, y};
   }
+
+  utils.handleInput = () => {
+    console.log(`Initial gap: ${initialGap}\nGap increment: ${gapIncrement}\nIncrement delta: ${incrementDelta}`);
+
+    utils.doMath();
+    utils.redrawGrid();
+  }
+
+  const increaseResolution = () => {
+    resolution *= 1.25;
+    inputRes.value = resolution;
+    utils.handleInput();
+  }
+
+  const decreaseResolution = () => {
+    resolution /= 1.25;
+    inputRes.value = resolution;
+    utils.handleInput();
+  }
+
+  const increaseGap = () => {
+    initialGap += gapIncrement;
+    gapIncrement += incrementDelta;
+    inputGap.value = initialGap;
+    utils.handleInput();
+  }
+
+  const decreaseGap = () => {
+    gapIncrement -= incrementDelta;
+    initialGap -= gapIncrement;
+    inputGap.value = initialGap;
+    utils.handleInput();
+  }
+
+  const inputRes = document.getElementById('inputRes');
+  const btnResInc = document.getElementById('btnResInc');
+  const btnResDec = document.getElementById('btnResDec');
+  btnResInc.addEventListener('click', e => increaseResolution());
+  btnResDec.addEventListener('click', e => decreaseResolution());
+
+  const inputGap = document.getElementById('inputGap');
+  const btnGapInc = document.getElementById('btnGapInc');
+  const btnGapDec = document.getElementById('btnGapDec');
+  btnGapInc.addEventListener('click', e => increaseGap());
+  btnGapDec.addEventListener('click', e => decreaseGap());
+
+  document.onkeydown = function(e) {
+    switch (e.keyCode) {
+    case 87:
+      increaseResolution();
+      break;
+    case 83:
+      decreaseResolution();
+      break;
+    case 65:
+      decreaseGap();
+      break;
+    case 68:
+      increaseGap();
+      break;
+    }
+  };
 
   drawSpiral();
 })();
@@ -87,7 +179,7 @@ function drawSpiral() {
   let y = 0;
   let delta = [0, -1];
 
-  for (let i = Math.pow(spiralSize, 2); i > 0; i--, skips++) {
+  for (let i = Math.pow(resolution * 2, 2); i > 0; i--, skips++) {
 
     // Is it time to draw one of the 1's at the end of the gap?
     if (skips === gap) {
@@ -96,6 +188,8 @@ function drawSpiral() {
       utils.drawRectangle(x + offset, y + offset);
       skips = 0;
       gap += gapIncrement;
+      //gapIncrement += incrementDelta;
+      //gap *= gapMultiplier;
     }
     
     if (x === y || (x < 0 && x === -y) || (x > 0 && x === 1 - y))
