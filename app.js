@@ -112,7 +112,7 @@ let utils = {
   }
 
   const decreaseGap = () => {
-    if (gapIncrement - incrementDelta > 0) {
+    if (initialGap - gapIncrement > 0) {
         gapIncrement -= incrementDelta;
         initialGap -= gapIncrement;
         utils.handleInput();
