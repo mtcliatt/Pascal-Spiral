@@ -115,41 +115,35 @@ let utils = {
 
   const increaseResolution = () => {
     resolution *= 1.25;
-    inputRes.value = resolution;
+    //inputRes.value = resolution;
     utils.handleInput();
   }
 
   const decreaseResolution = () => {
     resolution /= 1.25;
-    inputRes.value = resolution;
+    //inputRes.value = resolution;
     utils.handleInput();
   }
 
   const increaseGap = () => {
     initialGap += gapIncrement;
     gapIncrement += incrementDelta;
-    inputGap.value = initialGap;
     utils.handleInput();
   }
 
   const decreaseGap = () => {
     gapIncrement -= incrementDelta;
     initialGap -= gapIncrement;
-    inputGap.value = initialGap;
     utils.handleInput();
   }
 
+  /*
   const inputRes = document.getElementById('inputRes');
   const btnResInc = document.getElementById('btnResInc');
   const btnResDec = document.getElementById('btnResDec');
   btnResInc.addEventListener('click', e => increaseResolution());
   btnResDec.addEventListener('click', e => decreaseResolution());
-
-  const inputGap = document.getElementById('inputGap');
-  const btnGapInc = document.getElementById('btnGapInc');
-  const btnGapDec = document.getElementById('btnGapDec');
-  btnGapInc.addEventListener('click', e => increaseGap());
-  btnGapDec.addEventListener('click', e => decreaseGap());
+  */
 
   document.onkeydown = function(e) {
     switch (e.keyCode) {
@@ -181,18 +175,10 @@ function drawSpiral() {
 
   for (let i = Math.pow(resolution * 2, 2); i > 0; i--, skips++) {
 
-    // Is it time to draw one of the 1's at the end of the gap?
-    //if (skips === gap) {
-    //  utils.drawRectangle(x + offset, y + offset);
-    //} else if (skips === gap + 1) {
     if (skips === gap) {
       utils.drawRectangle(x + offset, y + offset);
       skips = 0;
       gap += gapIncrement;
-
-      // Don't uncomment these lines
-      //gapIncrement += incrementDelta;
-      //gap *= gapMultiplier;
     }
     
     if (x === y || (x < 0 && x === -y) || (x > 0 && x === 1 - y))
