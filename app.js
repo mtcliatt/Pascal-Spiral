@@ -1,35 +1,20 @@
 'use strict';
 
-/*
-  TODO 
-
-  - Make array to hold diff rect colors and loop through them
-  - Make input option for resolution (rectsWide & rectsHigh)
-  - Make input option for canvas width, height
-  - Make input for gap starting and increment
-  - Add option for drawing 1,2,3,... blocks instead of 2
-
-  Notes:
-
-  - Really able to see patterns if you make the canvas small with a high 
-    number of rectanglesWide/High and a high num for the spiral
-
-*/
-
 const colors = [
   'white',
   'red',
 ]
 
 let colorIndex = 0;
-
-//Nothing shows up after 11180?
 let canvasSize = 800;
 let resolution = canvasSize / 40;
 
+// helps stop lagging if you hold down WASD keys
+let maxZoom = 4000;
+
 /*
   Original:
-    let initialGap = 0;
+    let initialGap = 1;
     let gapIncrement = 1;
     let incrementDelta = 0;
   
@@ -43,19 +28,15 @@ let resolution = canvasSize / 40;
     let gapIncrement = 4;
     let incrementDelta = 3;
   
-  
   WOW! oscillations:
     let initialGap = 5;
     let gapIncrement = 4;
     let incrementDelta = 3;
-    
-
 */
 
-let initialGap = 0;
+let initialGap = 1;
 let gapIncrement = 1;
 let incrementDelta = 0;
-//let gapMultiplier = 1;
 
 let utils = {
   clearGrid: null,
@@ -93,8 +74,7 @@ let utils = {
 
   utils.drawRectangle = (column, row) => {
     const {x, y} = utils.rectangleToCoordinate(column, row);
-    //if (column % 2 == 1 && row % 2 == 1)
-    //  colorIndex++;
+    colorIndex++ 
     utils.drawRectangleAt(x, y);
   }
 
@@ -107,16 +87,16 @@ let utils = {
   }
 
   utils.handleInput = () => {
-    //console.log(`Initial gap: ${initialGap}\nGap increment: ${gapIncrement}\nIncrement delta: ${incrementDelta}`);
-
     utils.doMath();
     utils.redrawGrid();
   }
 
   const increaseResolution = () => {
-    resolution *= 1.25;
-    //inputRes.value = resolution;
-    utils.handleInput();
+    if (resolution * 1.25 < maxZoom) {
+      resolution *= 1.25;
+      //inputRes.value = resolution;
+      utils.handleInput();
+    }
   }
 
   const decreaseResolution = () => {
@@ -132,9 +112,11 @@ let utils = {
   }
 
   const decreaseGap = () => {
-    gapIncrement -= incrementDelta;
-    initialGap -= gapIncrement;
-    utils.handleInput();
+    if (gapIncrement - incrementDelta > 0) {
+        gapIncrement -= incrementDelta;
+        initialGap -= gapIncrement;
+        utils.handleInput();
+    }
   }
 
   /*
