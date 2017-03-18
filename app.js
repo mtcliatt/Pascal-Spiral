@@ -182,9 +182,10 @@ function drawSpiral() {
   for (let i = Math.pow(resolution * 2, 2); i > 0; i--, skips++) {
 
     // Is it time to draw one of the 1's at the end of the gap?
+    //if (skips === gap) {
+    //  utils.drawRectangle(x + offset, y + offset);
+    //} else if (skips === gap + 1) {
     if (skips === gap) {
-      utils.drawRectangle(x + offset, y + offset);
-    } else if (skips === gap + 1) {
       utils.drawRectangle(x + offset, y + offset);
       skips = 0;
       gap += gapIncrement;
